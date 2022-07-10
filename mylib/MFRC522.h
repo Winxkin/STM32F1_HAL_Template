@@ -4,6 +4,25 @@
 #include "main.h"
 #include "stm32f1xx_hal.h"
 #include "stm32f1xx_hal_gpio.h"
+#include "stm32f1xx_hal_spi.h"
+#include "stm32f1xx_hal_rcc.h"
+#include "stm32f1xx_hal_uart.h"
+
+//----define pin---------
+#define RC522_CS_GPIO_Port GPIOB
+#define RC522_CS_Pin  GPIO_PIN_12
+
+#define RC522_MISO_GPIO_Port GPIOB
+#define RC522_MISO_Pin  GPIO_PIN_14
+
+#define RC522_MOSI_GPIO_Port GPIOB
+#define RC522_MOSI_Pin  GPIO_PIN_15
+
+#define RC522_SCK_GPIO_Port GPIOB
+#define RC522_SCK_Pin  GPIO_PIN_13
+
+
+
 
 //Maximum length of the array
 #define MAX_LEN 16
@@ -110,24 +129,19 @@
 #define     Reserved34            0x3F
 //-----------------------------------------------
 // function definitions
-void Write_MFRC522(u_char, u_char);
-u_char Read_MFRC522(u_char);
-void SetBitMask(u_char, u_char);
-void ClearBitMask(u_char, u_char);
-void AntennaOn();
-void AntennaOff();
-void MFRC522_Reset();
-void MFRC522_Init();
-u_char MFRC522_Request(u_char, u_char*);
-u_char MFRC522_ToCard(u_char, u_char*, u_char, u_char*, uint*);
-u_char MFRC522_Anticoll(u_char*);
-void CalulateCRC(u_char*, u_char, u_char*);
-u_char MFRC522_SelectTag(u_char*);
-u_char MFRC522_Auth(u_char, u_char, u_char*, u_char*);
-u_char MFRC522_Read(u_char, u_char*);
-u_char MFRC522_Write(u_char, u_char*);
-void MFRC522_Halt();
-void MFRC522_StopCrypto1(void);
+
+
+void MFRC522_Init(SPI_HandleTypeDef* hspi2);
+uint8_t MFRC522_Request(SPI_HandleTypeDef* hspi2, uint8_t reqMode, uint8_t *TagType);
+uint8_t MFRC522_Anticoll(SPI_HandleTypeDef* hspi2, uint8_t *serNum);
+uint8_t MFRC522_Read(SPI_HandleTypeDef* hspi2, uint8_t blockAddr, uint8_t *recvData);
+uint8_t MFRC522_Write(SPI_HandleTypeDef* hspi2, uint8_t blockAddr, uint8_t *writeData);
+uint8_t MFRC522_Auth(SPI_HandleTypeDef* hspi2, uint8_t authMode, uint8_t BlockAddr, uint8_t *Sectorkey, uint8_t *serNum);
+uint8_t MFRC522_SelectTag(SPI_HandleTypeDef* hspi2, uint8_t *serNum);
+uint8_t MFRC522_Halt(SPI_HandleTypeDef* hspi2);
+
+
 
 
 #endif 
+
