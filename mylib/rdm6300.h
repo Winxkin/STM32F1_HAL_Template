@@ -23,6 +23,7 @@ typedef enum
 
 void RDM6300_Init(UART_num UARTx,UART_HandleTypeDef *s_UARTHandle);
 uint64_t RDM6300_get_id(uint8_t *strdata, uint8_t *msg_head, uint8_t *msg_tail);
+void RDM6300_convert_tag(uint8_t *tagarray, uint64_t tag );
 
 
 #endif 

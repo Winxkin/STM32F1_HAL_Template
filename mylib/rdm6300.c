@@ -114,6 +114,18 @@ uint64_t RDM6300_get_id(uint8_t *strdata, uint8_t *msg_head, uint8_t *msg_tail)
 	return tag;
 }
 
+void RDM6300_convert_tag(uint8_t *tagarray, uint64_t tag )
+{
 
+	  tagarray[0] = tag >> 8*0;
+    tagarray[1] = tag >> 8*1;
+    tagarray[2] = tag >> 8*2;
+    tagarray[3] = tag >> 8*3;
+    tagarray[4] = tag >> 8*4;
+    tagarray[5] = tag >> 8*5;
+    tagarray[6] = tag >> 8*6;
+    tagarray[7] = tag >> 8*7;
+
+}
 
 
