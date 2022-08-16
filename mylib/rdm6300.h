@@ -9,6 +9,8 @@
 #include "stm32f1xx_hal_rcc.h"
 #include "stm32f1xx_hal_uart.h"
 
+
+
 typedef enum
 {
 	UART1 = 1,
@@ -16,12 +18,11 @@ typedef enum
 	UART3 = 3,
 } UART_num;
 
-typedef void (*uart_callback_t) (void);
+
 
 
 void RDM6300_Init(UART_num UARTx,UART_HandleTypeDef *s_UARTHandle);
-void RDM6300_set_callback(void *cb);
-void RDM6300_get_id(UART_HandleTypeDef *hUART,uint8_t *pData, uint16_t Size);
+uint64_t RDM6300_get_id(uint8_t *strdata, uint8_t *msg_head, uint8_t *msg_tail);
 
 
 #endif 

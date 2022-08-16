@@ -1,6 +1,10 @@
 #include "rdm6300.h"
 
-uart_callback_t uart_callback = NULL;
+const uint8_t BUFFER_SIZE = 14; 
+const uint8_t DATA_SIZE = 10; // 10byte data (2byte version + 8byte tag)
+const uint8_t DATA_VERSION_SIZE = 2; // 2byte version (actual meaning of these two bytes 
+const uint8_t DATA_TAG_SIZE = 8; // 8byte tag
+const uint8_t CHECKSUM_SIZE = 2; // 2byte checksum
 
 
 
@@ -71,21 +75,45 @@ void RDM6300_Init(UART_num UARTx,UART_HandleTypeDef *s_UARTHandle)
   
 }
 
-
-void RDM6300_get_id(UART_HandleTypeDef *hUART,uint8_t *pData, uint16_t Size)
+uint64_t RDM6300_hex_to_value(uint8_t *str, unsigned int length)
 {
-	HAL_UART_Receive_IT(hUART,pData,Size);
+		uint8_t *copy = malloc((sizeof(char) * length) + 1); 
+		memcpy(copy, str, sizeof(char) * length);
+		copy[length] = '\0'; 
+		long value = strtol(copy, NULL, 16);
+		 free(copy);
+	return value;
+
 }
 
 
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
+
+
+uint64_t RDM6300_get_id(uint8_t *strdata, uint8_t *msg_head, uint8_t *msg_tail)
 {
-	uart_callback();
+  *msg_head = strdata[0];
+  uint8_t *msg_data = strdata+ 1; // 10 byte => data contains 2byte version + 8byte tag
+
+ // uint8_t *msg_data_version = msg_data;
+  uint8_t *msg_data_tag = msg_data + 2;
+  uint8_t *msg_checksum = strdata + 11; // 2 byte
+  *msg_tail = strdata[13];
+	
+	uint64_t tag = RDM6300_hex_to_value(msg_data_tag, DATA_TAG_SIZE);
+	
+	 long checksum = 0;
+	for (int i = 0; i < DATA_SIZE; i+= CHECKSUM_SIZE) {
+      long val = RDM6300_hex_to_value(msg_data + i, CHECKSUM_SIZE);
+      checksum ^= val;
+	}
+	if (checksum == RDM6300_hex_to_value(msg_checksum, CHECKSUM_SIZE)) { 
+      return tag;
+	} else {
+      return 0;
+	}
+	return tag;
 }
 
 
 
-void RDM6300_set_callback(void *cb)
-{
-	uart_callback = cb;
-}
+
